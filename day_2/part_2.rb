@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './intcode.rb'
+require '../lib/intcode.rb'
 
 memory = File.read('input.txt').chomp.split(',').map(&:to_i)
 possible_inputs = (0..99).to_a.repeated_permutation(2)

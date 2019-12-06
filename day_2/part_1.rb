@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './intcode.rb'
+require '../lib/intcode.rb'
 
 memory = File.read('input.txt').chomp.split(',').map(&:to_i)
 
