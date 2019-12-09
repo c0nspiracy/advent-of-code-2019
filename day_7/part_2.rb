@@ -14,12 +14,12 @@ res = (5..9).to_a.permutation(5).to_a.map do |permutation|
 
   loop do
     computers.each_cons(2) do |left, right|
-      left.run
+      left.run_until_next_output
       right << left.raw_output
     end
 
     last_comp = computers.last
-    last_comp.run
+    last_comp.run_until_next_output
     break if last_comp.halted?
 
     computers.first << last_comp.raw_output

@@ -21,6 +21,15 @@ class Intcode
   end
 
   def run
+    loop do
+      decode_instruction
+      break if halted?
+
+      execute_instruction
+    end
+  end
+
+  def run_until_next_output
     output_size = @output.size
     loop do
       decode_instruction
