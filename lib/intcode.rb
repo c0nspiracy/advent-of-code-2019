@@ -39,6 +39,10 @@ class Intcode
     end
   end
 
+  def raw_output
+    @output.last
+  end
+
   def read(address)
     @memory[address]
   end
