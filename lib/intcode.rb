@@ -21,11 +21,13 @@ class Intcode
   end
 
   def run
+    output_size = @output.size
     loop do
       decode_instruction
-      break if end_of_program?
+      break if halted?
 
       execute_instruction
+      break if @output.size > output_size
     end
   end
 
@@ -43,6 +45,10 @@ class Intcode
     @output.last
   end
 
+  def <<(input)
+    @input << input
+  end
+
   def read(address)
     @memory[address]
   end
@@ -51,13 +57,13 @@ class Intcode
     @memory[address] = value
   end
 
+  def halted?
+    opcode == OPCODE_END
+  end
+
   private
 
   attr_reader :opcode
-
-  def end_of_program?
-    opcode == OPCODE_END
-  end
 
   def decode_instruction
     @opcode, *@parameter_modes = immediate_mode? ? decode_immediate_mode_instruction : decode_position_mode_instruction
