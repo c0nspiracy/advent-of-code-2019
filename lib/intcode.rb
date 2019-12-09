@@ -10,7 +10,8 @@ class Intcode
     5 => :jump_if_true,
     6 => :jump_if_false,
     7 => :less_than,
-    8 => :equals
+    8 => :equals,
+    9 => :adjust_relative_base
   }
 
   def initialize(memory, input = [])
@@ -18,6 +19,7 @@ class Intcode
     @instruction_pointer = 0
     @input = input
     @output = []
+    @relative_base = 0
   end
 
   def run
@@ -59,7 +61,8 @@ class Intcode
   end
 
   def read(address)
-    @memory[address]
+    raise "Can't read memory at a negative address" if address.negative?
+    @memory[address] || 0
   end
 
   def write(address, value)
@@ -99,10 +102,14 @@ class Intcode
     addresses = @memory[@instruction_pointer + 1, method.arity]
     params_for_writing = method.parameters.map { |_, p| p == :x }
     addresses.map.with_index do |address, index|
-      if @parameter_modes[index].zero? && !params_for_writing[index]
-        read(address)
-      else
+      case @parameter_modes[index]
+      when 0
+        params_for_writing[index] ? address : read(address)
+      when 1
         address
+      when 2
+        new_address = @relative_base + address
+        params_for_writing[index] ? new_address : read(new_address)
       end
     end
   end
@@ -151,6 +158,11 @@ class Intcode
   def op_equals(a, b, x)
     write(x, a == b ? 1 : 0)
     @instruction_pointer += 4
+  end
+
+  def op_adjust_relative_base(a)
+    @relative_base += a
+    @instruction_pointer += 2
   end
 
   def instruction
