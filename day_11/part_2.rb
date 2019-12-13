@@ -10,11 +10,8 @@ robot = HullPaintingRobot.new(HullPaintingRobot::WHITE)
 loop do
   computer << robot.colour
 
-  computer.run_until_next_output
-  robot.paint(computer.raw_output)
-
-  computer.run_until_next_output
-  robot.turn(computer.raw_output)
+  robot.paint(computer.run_and_return_output)
+  robot.turn(computer.run_and_return_output)
   robot.move
 
   break if computer.halted?

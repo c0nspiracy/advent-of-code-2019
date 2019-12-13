@@ -31,15 +31,18 @@ class Intcode
     end
   end
 
-  def run_until_next_output
-    output_size = @output.size
+  def run_and_return_output(n = 1)
+    starting_output_size = @output.size
+
     loop do
       decode_instruction
       break if halted?
 
       execute_instruction
-      break if @output.size > output_size
+      break if @output.size >= starting_output_size + n
     end
+
+    n == 1 ? @output.last : @output.last(n)
   end
 
   def print_output

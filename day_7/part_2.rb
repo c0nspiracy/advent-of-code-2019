@@ -14,18 +14,15 @@ res = (5..9).to_a.permutation(5).to_a.map do |permutation|
 
   loop do
     computers.each_cons(2) do |left, right|
-      left.run_until_next_output
-      right << left.raw_output
+      right << left.run_and_return_output
     end
 
     last_comp = computers.last
-    last_comp.run_until_next_output
-    break if last_comp.halted?
+    last_output = last_comp.run_and_return_output
+    break last_output if last_comp.halted?
 
-    computers.first << last_comp.raw_output
+    computers.first << last_output
   end
-
-  computers.last.raw_output
 end
 
 puts res.max
