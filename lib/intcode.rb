@@ -22,6 +22,21 @@ class Intcode
     @relative_base = 0
   end
 
+  def run_until
+    loop do
+      decode_instruction
+      break if halted?
+
+      execute_instruction
+      break if @last_output && yield(@last_output)
+    end
+  end
+
+  def run_and_return_all_output
+    run
+    @output
+  end
+
   def run
     loop do
       decode_instruction
@@ -60,7 +75,7 @@ class Intcode
   end
 
   def <<(input)
-    @input << input
+    @input.concat(Array(input))
   end
 
   def read(address)
@@ -97,6 +112,7 @@ class Intcode
   end
 
   def execute_instruction
+    @last_output = nil
     operation = method(:"op_#{OPCODES[opcode]}")
     operation.call(*parameters_for(operation))
   end
@@ -133,6 +149,7 @@ class Intcode
   end
 
   def op_output(a)
+    @last_output = a
     @output << a
     @instruction_pointer += 2
   end
