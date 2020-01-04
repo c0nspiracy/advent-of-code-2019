@@ -22,6 +22,24 @@ class Intcode
     @relative_base = 0
   end
 
+  def output_size
+    @output.size
+  end
+
+  def next_output(n = 1)
+    @output.shift(n)
+  end
+
+  def run_until_waiting_for_input
+    loop do
+      decode_instruction
+      break if halted?
+      break if opcode == 3 && @input.empty?
+
+      execute_instruction
+    end
+  end
+
   def run_until
     loop do
       decode_instruction
@@ -76,6 +94,11 @@ class Intcode
 
   def <<(input)
     @input.concat(Array(input))
+  end
+
+  def provide_input(input)
+    @input << input
+    run_until_waiting_for_input
   end
 
   def read(address)
