@@ -50,6 +50,22 @@ class Intcode
     end
   end
 
+  def run_interactive
+    loop do
+      decode_instruction
+      break if halted?
+
+      execute_instruction
+      print @last_output.chr if @last_output
+
+      next unless @output.last(8).map(&:chr).join == 'Command?'
+
+      @last_output = nil
+      @output = []
+      break
+    end
+  end
+
   def run_and_return_all_output
     run
     @output
@@ -99,6 +115,10 @@ class Intcode
   def provide_input(input)
     @input << input
     run_until_waiting_for_input
+  end
+
+  def provide_ascii_command(command)
+    @input.concat(command.bytes)
   end
 
   def read(address)
